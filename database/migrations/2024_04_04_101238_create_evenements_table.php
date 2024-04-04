@@ -17,7 +17,6 @@ return new class extends Migration
             $table->enum('type', ['THEATRE', 'CINEMA', 'CONCERT', 'FESTIVAL', 'COMPETITION']);
             $table->string('description');
             $table->datetime('date_event');
-            $table->timestamps();
         });
     }
 
