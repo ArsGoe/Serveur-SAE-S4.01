@@ -19,7 +19,7 @@ return new class extends Migration
             $table->enum('type', Type::getValues());
             $table->string('description');
             $table->datetime('date_event');
-            $table->foreignIdFor(Lieu::class)->constrained();
+            $table->foreignId('lieu_id')->references('id')->on('lieux');
         });
     }
 
