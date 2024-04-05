@@ -1,5 +1,8 @@
 <?php
 
+use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\ClientController;
+use App\Http\Controllers\Api\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -16,4 +19,50 @@ use Illuminate\Support\Facades\Route;
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
+});
+
+Route::controller(AuthController::class)->group(function () {
+    Route::post('login', 'login');
+    Route::post('register', 'register');
+    Route::post('logout', 'logout');
+    Route::post('refresh', 'refresh');
+    Route::get('me', 'me');
+});
+
+
+// Route::apiResource('salles', SalleController::class);
+
+Route::prefix('clients')->group(function () {
+    Route::get('/', [ClientController::class, 'index'])
+        ->middleware(['auth', 'role:Gestionnaire'])
+        ->name('clients.index ');
+    Route::get('/trimNom', [ClientController::class, 'trimNom'])
+        ->middleware(['auth', 'role:Gestionnaire'])
+        ->name('clients.TrimNom');
+    Route::get('/triNom', [ClientController::class, 'triNom'])
+        ->middleware(['auth', 'role:Gestionnaire'])
+        ->name('clients.TriNom');
+    Route::get('/triVille', [ClientController::class, 'triVille'])
+        ->middleware(['auth', 'role:Gestionnaire'])
+        ->name('clients.TriVille');
+    Route::get('/{id}', [ClientController::class, 'show'])->where('id', '[0-9]+')
+        ->middleware(['auth'])
+        ->name('clients.show');
+    Route::put('/{id}', [ClientController::class, 'update'])->where('id', '[0-9]+')
+        ->middleware(['auth', 'role:Gestionnaire'])
+        ->name('clients.update');
+    Route::post('/', [ClientController::class, 'store'])
+        ->name('clients.store');
+    Route::delete('/{id}', [ClientController::class, 'destroy'])->where('id', '[0-9]+')
+        ->middleware(['auth', 'role:admin'])
+        ->name('clients.destroy');
+});
+
+Route::prefix('users')->group(function () {
+    Route::get('/{id}', [UserController::class, 'profil'])->where('id', '[0-9]+')
+        ->middleware(['auth'])
+        ->name('users.profil ');
+    Route::delete('/{id}', [UserController::class, 'destroy'])->where('id', '[0-9]+')
+        ->middleware(['auth', 'role:admin'])
+        ->name('users.destroy ');
 });
