@@ -7,21 +7,22 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class Client extends Model
+class Prix extends Model
 {
     use HasFactory;
 
+    protected $table = 'prix';
     public $timestamps = false;
-    protected $guarded = ['id'];
-    protected $fillable = ['nom', 'prenom', 'email', 'telephone', 'adresse', 'code_postal', 'ville', 'pays'];
 
-    public function user(): BelongsTo
+    protected $guarded = ['id'];
+
+    public function evenement(): BelongsTo
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(Evenement::class);
     }
 
-    public function reservations(): HasMany
+    public function billets(): HasMany
     {
-        return $this->hasMany(Reservation::class);
+        return $this->hasMany(Billet::class);
     }
 }
