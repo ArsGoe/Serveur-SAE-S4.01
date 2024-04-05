@@ -21,6 +21,7 @@ return new class extends Migration
                 ->onUpdate('cascade')
                 ->onDelete('cascade');
             $table->primary(['evenement_id', 'artiste_id']);
+            $table->integer('ordre');
         });
     }
 
