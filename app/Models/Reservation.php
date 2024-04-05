@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Reservation extends Model
 {
@@ -19,8 +20,13 @@ class Reservation extends Model
         return $this->belongsTo(Evenement::class);
     }
 
-    public function lieu(): BelongsTo
+    public function billets(): HasMany
     {
-        return $this->belongsTo(Lieu::class);
+        return $this->Hasmany(Billet::class);
+    }
+
+    public function client(): BelongsTo
+    {
+        return $this->belongsTo(Client::class);
     }
 }
