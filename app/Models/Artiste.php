@@ -11,4 +11,9 @@ class Artiste extends Model
 
     public $timestamps = false;
     protected $guarded = ['id'];
+
+    public function evenements()
+    {
+        return $this->belongsToMany(Evenement::class);
+    }
 }
