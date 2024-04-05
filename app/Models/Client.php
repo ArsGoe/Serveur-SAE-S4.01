@@ -14,9 +14,9 @@ class Client extends Model
     }
 
     public function reservations() {
-        return $this->belongsToMany(Reservation::class);
+        return $this->hasMany(Reservation::class);
     }
     public function avis() {
-        return $this->belongsToMany(Avis::class);
+        return $this->hasMany(Avis::class);
     }
 }
