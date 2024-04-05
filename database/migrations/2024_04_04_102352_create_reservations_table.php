@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Client;
 use App\Models\Enums\Statut;
 use App\Models\Evenement;
 use Illuminate\Database\Migrations\Migration;
