@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Lieu;
 use App\Models\Enums\Type;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
@@ -18,6 +19,7 @@ return new class extends Migration
             $table->enum('type', Type::getValues());
             $table->string('description');
             $table->datetime('date_event');
+            $table->foreignIdFor(Lieu::class)->constrained();
         });
     }
 
