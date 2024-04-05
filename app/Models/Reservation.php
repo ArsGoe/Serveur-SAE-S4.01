@@ -18,4 +18,9 @@ class Reservation extends Model
     {
         return $this->belongsTo(Evenement::class);
     }
+
+    public function lieu(): BelongsTo
+    {
+        return $this->belongsTo(Lieu::class);
+    }
 }
