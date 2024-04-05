@@ -58,4 +58,16 @@ class User extends Authenticatable implements JWTSubject {
         ];
 
     }
+
+    public function roles() {
+        return $this->role;
+    }
+
+    public static function findbyemail(string $email) {
+        foreach (User::all() as $user) {
+            if($user->email == $email) {
+                return $user->id;
+            }
+        }
+    }
 }

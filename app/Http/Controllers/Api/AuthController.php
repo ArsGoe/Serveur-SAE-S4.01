@@ -7,12 +7,11 @@ use App\Http\Controllers\Controller;
 //use App\Http\Requests\UserRequest;
 use App\Http\Requests\UserRequest;
 use App\Http\Resources\UserResource;
-use App\Models\Role;
+use App\Models\Enums\UserRole;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use OpenApi\Attributes as OA;
 
 
 class AuthController extends Controller {
@@ -59,7 +58,7 @@ class AuthController extends Controller {
             'email' => $request->email,
             'password' => Hash::make($request->password),
         ]);
-        $roleVisiteur = Role::where('nom', Role::VISITEUR)->first();
+        $roleVisiteur = UserRole::where('nom', UserRole::NON_ACTIF)->first();
         $user->roles()->attach([$roleVisiteur->id]);
         $token = auth()->tokenById($user->id);
         return response()->json([

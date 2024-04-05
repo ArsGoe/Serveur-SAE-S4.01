@@ -4,12 +4,9 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ClientRequest;
-use App\Http\Requests\SalleRequest;
 use App\Http\Resources\ClientResource;
-use App\Http\Resources\SalleResource;
 use App\Models\Client;
-use App\Models\Salle;
-use OpenApi\Attributes as OA;
+use App\Models\User;
 
 class ClientController extends Controller
 {
@@ -21,12 +18,19 @@ class ClientController extends Controller
 
     public function store(ClientRequest $request)
     {
+        $user = new User();
+        $user->name = $request->nom;
+        $user->email = $request->email;
+        $user->password = $request->password;
+        $user->save();
         $client = new Client();
         $client->nom = $request->nom;
         $client->prenom = $request->prenom;
         $client->adresse = $request->adresse;
         $client->code_postal = $request->code_postal;
         $client->ville = $request->ville;
+        $client->avatar = "https://www.intima-et-moi.fr/mon-hygiene-intime/quel-est-le-ph-de-la-zone-intime/";
+        $client->user_id = User::findOrFail(User::findbyemail($user->email))->id;
         $client->save();
         return response()->json([
             'status' => true,

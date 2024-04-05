@@ -52,7 +52,6 @@ Route::prefix('clients')->group(function () {
         ->middleware(['auth', 'role:Gestionnaire'])
         ->name('clients.update');
     Route::post('/', [ClientController::class, 'store'])
-        ->middleware(['auth'])
         ->name('clients.store');
     Route::delete('/{id}', [ClientController::class, 'destroy'])->where('id', '[0-9]+')
         ->middleware(['auth', 'role:admin'])
