@@ -1,6 +1,6 @@
 <?php
 
-use App\Models\Enums\Type;
+use App\Models\Enums\Genre;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -12,12 +12,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('evenements', function (Blueprint $table) {
+        Schema::create('artistes', function (Blueprint $table) {
             $table->id();
-            $table->string('titre');
-            $table->enum('type', Type::getValues());
-            $table->string('description');
-            $table->datetime('date_event');
+            $table->string('nom');
+            $table->enum('genre', Genre::getValues());
         });
     }
 
@@ -26,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('evenements');
+        Schema::dropIfExists('artistes');
     }
 };

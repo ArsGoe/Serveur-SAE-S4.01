@@ -1,6 +1,6 @@
 <?php
 
-use App\Models\Enums\Statut;
+use App\Models\Artiste;
 use App\Models\Evenement;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
@@ -13,16 +13,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('reservations', function (Blueprint $table) {
-            $table->id();
-            $table->datetime('date_res');
-            $table->integer('nb_billets')->nullable();
-            $table->double('montant')->nullable();
-            $table->enum('statut', Statut::getValues());
+        Schema::create('participants', function (Blueprint $table) {
             $table->foreignIdFor(Evenement::class)->constrained()
                 ->onUpdate('cascade')
                 ->onDelete('cascade');
-            $table->timestamps();
+            $table->foreignIdFor(Artiste::class)->constrained()
+                ->onUpdate('cascade')
+                ->onDelete('cascade');
+            $table->primary(['evenement_id', 'artiste_id']);
         });
     }
 
@@ -31,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('reservations');
+        Schema::dropIfExists('participants');
     }
 };
