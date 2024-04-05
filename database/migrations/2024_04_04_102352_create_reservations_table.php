@@ -22,7 +22,9 @@ return new class extends Migration
             $table->foreignIdFor(Evenement::class)->constrained()
                 ->onUpdate('cascade')
                 ->onDelete('cascade');
-            $table->timestamps();
+            $table->foreignIdFor(Client::class)->constrained()
+                ->onUpdate('cascade')
+                ->onDelete('cascade');
         });
     }
 
