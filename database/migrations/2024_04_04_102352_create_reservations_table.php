@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Enums\Statut;
 use App\Models\Evenement;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
@@ -17,7 +18,7 @@ return new class extends Migration
             $table->datetime('date_res');
             $table->integer('nb_billets')->nullable();
             $table->double('montant')->nullable();
-            $table->enum('statut', ['EN ATTENTE', 'PAYE', 'ANNULE', 'BILLET_EDITE']);
+            $table->enum('statut', Statut::getValues());
             $table->foreignIdFor(Evenement::class)->constrained()
                 ->onUpdate('cascade')
                 ->onDelete('cascade');
