@@ -16,7 +16,6 @@ return new class extends Migration
             $table->id();
             $table->string('nom');
             $table->enum('genre', Genre::getValues());
-            $table->timestamps();
         });
     }
 
