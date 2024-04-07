@@ -20,5 +20,6 @@ class DatabaseSeeder extends Seeder
         $this->call(PrixSeeder::class);
         $this->call(ReservationSeeder::class);
         $this->call(BilletSeeder::class);
+        $this->call(ParticipantSeeder::class);
     }
 }
