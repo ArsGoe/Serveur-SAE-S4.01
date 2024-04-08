@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\ClientController;
+use App\Http\Controllers\Api\ReservationController;
 use App\Http\Controllers\Api\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -65,4 +66,10 @@ Route::prefix('users')->group(function () {
     Route::delete('/{id}', [UserController::class, 'destroy'])->where('id', '[0-9]+')
         ->middleware(['auth', 'role:admin'])
         ->name('users.destroy ');
+});
+
+Route::prefix('reservations')->group(function () {
+    Route::get('/', [ReservationController::class, 'reservationsClient'])
+        ->middleware(['auth', 'role:ACTIF'])
+        ->name('reservations.reservationsClient');
 });
