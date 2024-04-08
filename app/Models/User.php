@@ -7,9 +7,10 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use PHPOpenSourceSaver\JWTAuth\Contracts\JWTSubject;
+use OpenApi\Attributes as OA;
 
-class User extends Authenticatable
-{
+class User extends Authenticatable implements JWTSubject {
     use HasApiTokens, HasFactory, Notifiable;
 
     /**
@@ -42,4 +43,31 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+
+    public function client() {
+        return $this->belongsTo(Client::class);
+    }
+
+    public function getJWTIdentifier() {
+        return $this->getKey();
+    }
+
+    public function getJWTCustomClaims() {
+        return [
+            "role" => $this->role,
+        ];
+
+    }
+
+    public function roles() {
+        return $this->role;
+    }
+
+    public static function findbyemail(string $email) {
+        foreach (User::all() as $user) {
+            if($user->email == $email) {
+                return $user->id;
+            }
+        }
+    }
 }
