@@ -71,4 +71,7 @@ Route::prefix('users')->group(function () {
 Route::prefix('evenements')->group(function () {
    Route::get("/", [EvenementController::class, 'index'])
         ->name('evenements.index');
+   Route::get("/{id}", [EvenementController::class, 'show'])->where('id', '[0-9]+')
+        ->middleware(['auth'])
+        ->name('evenements.show');
 });
