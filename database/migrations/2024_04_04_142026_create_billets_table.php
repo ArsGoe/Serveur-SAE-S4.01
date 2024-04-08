@@ -17,7 +17,7 @@ return new class extends Migration
             $table->id();
             $table->integer('quantite');
             $table->foreignIdFor(Reservation::class)->constrained()->onDelete('cascade');
-            $table->foreignIdFor(Prix::class)->constrained()->onDelete('cascade');
+            $table->foreignId('prix_id')->references('id')->on('prix')->onDelete('cascade');
         });
     }
 

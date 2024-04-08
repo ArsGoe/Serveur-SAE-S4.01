@@ -14,5 +14,12 @@ class DatabaseSeeder extends Seeder
     {
         $this->call(UserSeeder::class);
         $this->call(ClientSeeder::class);
+        $this->call(LieuSeeder::class);
+        $this->call(ArtisteSeeder::class);
+        $this->call(EvenementSeeder::class);
+        $this->call(PrixSeeder::class);
+        $this->call(ReservationSeeder::class);
+        $this->call(BilletSeeder::class);
+        $this->call(ParticipantSeeder::class);
     }
 }
