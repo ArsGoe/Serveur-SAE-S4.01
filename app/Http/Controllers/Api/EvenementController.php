@@ -12,7 +12,7 @@ use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class EvenementController extends Controller
 {
-    public function index(Request $request) : AnonymousResourceCollection
+    public function index(Request $request) : JsonResponse
     {
         $evenements = Evenement::all();
 
@@ -34,6 +34,8 @@ class EvenementController extends Controller
             $evenements = $evenements->where('lieu_id', $request->lieu);
         }
 
-       return EvenementResource::collection($evenements);
+       return response()->json(
+                EvenementResource::collection($evenements)
+       );
     }
 }

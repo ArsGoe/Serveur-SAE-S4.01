@@ -29,7 +29,8 @@ class EvenementResource extends JsonResource
             'type' => $this->type,
             'description' => $this->description,
             'date_event' => $this->date_event,
-            'lieu' => $this->lieu
+            'lieu' => $this->lieu,
+            'artistes' => $this->artistes->sortBy('pivot.ordre'),
         ];
     }
 }
