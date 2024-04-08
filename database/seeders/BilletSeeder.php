@@ -15,13 +15,29 @@ class BilletSeeder extends Seeder
      */
     public function run(): void
     {
-        $billets = Billet::factory(10)->make();
-        $reservation_ids = Reservation::all()->pluck('id')->toArray();
-        $prix_ids = Prix::all()->pluck('id')->toArray();
-        foreach ($billets as $billet) {
-            $billet->reservation_id = $reservation_ids[array_rand($reservation_ids)];
-            $billet->prix_id = $prix_ids[array_rand($prix_ids)];
-            $billet->save();
+        $reservations = Reservation::all();
+        foreach ($reservations as $reservation) {
+            $prix_ids = Prix::all()->pluck('id')->toArray();
+            $nb_billets = rand(1, 5);
+            for ($i = 0; $i < $nb_billets; $i++) {
+                $billet = Billet::factory()->make();
+                $prix_id = $prix_ids[array_rand($prix_ids)];
+                $billet->prix_id =  $prix_id;
+                $prix_ids = array_diff($prix_ids, [$prix_id]);
+                $billet->reservation_id = $reservation->id;
+                $billet->save();
+            }
+        }
+
+        // update montant reservation
+        foreach ($reservations as $reservation) {
+            $montant = 0;
+            foreach ($reservation->billets as $billet) {
+                $montant += $billet->prix->valeur * $billet->quantite;
+            }
+            $reservation->nb_billets = $reservation->billets->count();
+            $reservation->montant = $montant;
+            $reservation->update();
         }
     }
 }

@@ -21,6 +21,8 @@ class ReservationSeeder extends Seeder
         foreach($reservations as $reservation) {
             $reservation->evenement_id = $event_ids[array_rand($event_ids)];
             $reservation->client_id = $client_ids[array_rand($client_ids)];
+            $reservation->montant = 0;
+            $reservation->nb_billets = 0;
             $reservation->save();
         }
     }
