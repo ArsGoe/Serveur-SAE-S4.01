@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\ClientController;
+use App\Http\Controllers\Api\EvenementController;
 use App\Http\Controllers\Api\ReservationController;
 use App\Http\Controllers\Api\UserController;
 use Illuminate\Http\Request;
@@ -66,6 +67,11 @@ Route::prefix('users')->group(function () {
     Route::delete('/{id}', [UserController::class, 'destroy'])->where('id', '[0-9]+')
         ->middleware(['auth', 'role:admin'])
         ->name('users.destroy ');
+});
+
+Route::prefix('evenements')->group(function () {
+   Route::get("/", [EvenementController::class, 'index'])
+        ->name('evenements.index');
 });
 
 Route::prefix('reservations')->group(function () {
