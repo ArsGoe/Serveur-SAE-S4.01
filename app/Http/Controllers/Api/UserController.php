@@ -27,7 +27,7 @@ class UserController extends Controller
                 'nom'=> $client->nom,
                 'prenom' => $client->prenom,
                 'adresse' => $client->adresse,
-                'code postal ' => $client->code_postal,
+                'code_postal' => $client->code_postal,
                 'ville' => $client->ville,
                 'name' => $user->name,
                 'email' => $user->email,
