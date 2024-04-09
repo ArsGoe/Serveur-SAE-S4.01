@@ -7,6 +7,7 @@ use App\Http\Resources\EvenementResource;
 use App\Models\Enums\Statut;
 use App\Models\Enums\UserRole;
 use App\Models\Evenement;
+use App\Models\Lieu;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
@@ -116,6 +117,18 @@ class EvenementController extends Controller
         $evenement->prix()->createMany($request->prix);
 
         return response()->json(['message' => 'Evenement created'], 201);
+    }
+
+    public function lieux(Request $request) : JsonResponse
+    {
+        $user = $request->user();
+        if ($user->role == UserRole::NON_ACTIF) {
+            return response()->json(['message' => 'Unauthorized'], 401);
+        }
+
+        $lieux = Lieu::all();
+
+        return response()->json($lieux);
     }
 
     public function destroy(Request $request, int $id) : JsonResponse

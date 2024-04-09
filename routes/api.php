@@ -81,3 +81,7 @@ Route::prefix('evenements')->group(function () {
         ->middleware(['auth'])
         ->name('evenements.destroy');
 });
+
+Route::get('/lieux', [EvenementController::class, 'lieux'])
+    ->middleware(['auth'])
+    ->name('lieux.index');
