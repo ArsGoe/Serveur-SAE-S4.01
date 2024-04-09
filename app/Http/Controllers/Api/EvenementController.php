@@ -146,6 +146,32 @@ class EvenementController extends Controller
         return response()->json($this->cat_dispo($evenement));
     }
 
+    public function update(Request $request, int $id) : JsonResponse
+    {
+        $user = $request->user();
+        if ($user->role != UserRole::GESTIONNAIRE && $user->role != UserRole::ADMIN) {
+            return response()->json(['message' => 'Unauthorized'], 401);
+        }
+
+        $evenement = Evenement::find($id);
+        if (!$evenement) {
+            return response()->json(['message' => 'Evenement not found'], 404);
+        }
+
+        $validatedData = $request->validate([
+            'titre' => 'sometimes|required',
+            'type' => 'sometimes|required',
+            'description' => 'sometimes|required',
+            'date_event' => 'sometimes|required',
+            'lieu_id' => 'sometimes|required|exists:lieux,id',
+        ]);
+
+        $evenement->fill($validatedData);
+        $evenement->save();
+
+        return response()->json(['message' => 'Evenement updated']);
+    }
+
     public function destroy(Request $request, int $id) : JsonResponse
     {
         $user = $request->user();
