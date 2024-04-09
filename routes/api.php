@@ -77,4 +77,7 @@ Route::prefix('evenements')->group(function () {
    Route::post("/", [EvenementController::class, 'store'])
         ->middleware(['auth'])
         ->name('evenements.store');
+   Route::delete("/{id}", [EvenementController::class, 'destroy'])->where('id', '[0-9]+')
+        ->middleware(['auth'])
+        ->name('evenements.destroy');
 });

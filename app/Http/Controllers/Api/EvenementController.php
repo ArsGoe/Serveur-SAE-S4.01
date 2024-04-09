@@ -117,4 +117,25 @@ class EvenementController extends Controller
 
         return response()->json(['message' => 'Evenement created'], 201);
     }
+
+    public function destroy(Request $request, int $id) : JsonResponse
+    {
+        $user = $request->user();
+        if ($user->role != UserRole::ADMIN) {
+            return response()->json(['message' => 'Unauthorized'], 401);
+        }
+
+        $evenement = Evenement::find($id);
+        if (!$evenement) {
+            return response()->json(['message' => 'Evenement not found'], 404);
+        }
+
+        if ($evenement->reservations->count() > 0) {
+            return response()->json(['message' => 'Evenement has reservations'], 400);
+        }
+
+        $evenement->delete();
+
+        return response()->json(['message' => 'Evenement deleted']);
+    }
 }

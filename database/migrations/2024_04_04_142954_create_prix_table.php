@@ -17,7 +17,9 @@ return new class extends Migration
             $table->string('categorie');
             $table->integer('nombre');
             $table->double('valeur');
-            $table->foreignIdFor(Evenement::class)->constrained();
+            $table->foreignIdFor(Evenement::class)->constrained()
+                ->onUpdate('cascade')
+                ->onDelete('cascade');
         });
     }
 
