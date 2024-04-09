@@ -10,6 +10,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * @property mixed $id
+ * @property mixed $prix
+ * @method static find(int $id)
  */
 class Evenement extends Model
 {

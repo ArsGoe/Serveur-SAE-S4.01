@@ -72,6 +72,18 @@ Route::prefix('users')->group(function () {
 Route::prefix('evenements')->group(function () {
    Route::get("/", [EvenementController::class, 'index'])
         ->name('evenements.index');
+   Route::get("/{id}", [EvenementController::class, 'show'])->where('id', '[0-9]+')
+        ->middleware(['auth'])
+        ->name('evenements.show');
+   Route::post("/", [EvenementController::class, 'store'])
+        ->middleware(['auth'])
+        ->name('evenements.store');
+   Route::delete("/{id}", [EvenementController::class, 'destroy'])->where('id', '[0-9]+')
+        ->middleware(['auth'])
+        ->name('evenements.destroy');
+   Route::get("/{id}/prix", [EvenementController::class, 'prix'])->where('id', '[0-9]+')
+        ->middleware(['auth'])
+        ->name('evenements.prix');
     Route::get('/{id}/reservations', [ReservationController::class, 'reservationsEvent'])
         ->where('id', '[0-9]+')
         ->middleware(['auth', 'role:Gestionnaire,admin'])
@@ -83,3 +95,7 @@ Route::prefix('reservations')->group(function () {
         ->middleware(['auth', 'role:ACTIF'])
         ->name('reservations.reservationsClient');
 });
+
+Route::get('/lieux', [EvenementController::class, 'lieux'])
+    ->middleware(['auth'])
+    ->name('lieux.index');
