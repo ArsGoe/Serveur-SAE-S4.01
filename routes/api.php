@@ -72,6 +72,10 @@ Route::prefix('users')->group(function () {
 Route::prefix('evenements')->group(function () {
    Route::get("/", [EvenementController::class, 'index'])
         ->name('evenements.index');
+    Route::get('/{id}/reservations', [ReservationController::class, 'reservationsEvent'])
+        ->where('id', '[0-9]+')
+        ->middleware(['auth', 'role:Gestionnaire,admin'])
+        ->name('reservations.reservationsEvent');
 });
 
 Route::prefix('reservations')->group(function () {
