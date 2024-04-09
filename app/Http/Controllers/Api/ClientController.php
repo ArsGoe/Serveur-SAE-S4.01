@@ -19,7 +19,7 @@ class ClientController extends Controller
     public function store(ClientRequest $request)
     {
         $user = new User();
-        $user->name = $request->nom;
+        $user->name = $request->nom." ".$request->prenom;
         $user->email = $request->email;
         $user->password = $request->password;
         $user->save();

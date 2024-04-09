@@ -104,7 +104,6 @@ class EvenementController extends Controller
             'prix.*.nombre' => 'required|integer',
             'prix.*.valeur' => 'required|numeric',
         ]);
-
         $evenement = new Evenement();
         $evenement->titre = $request->titre;
         $evenement->type = $request->type;
@@ -113,11 +112,15 @@ class EvenementController extends Controller
         $evenement->lieu_id = $request->lieu_id;
         $evenement->save();
 
-        $evenement->artistes()->attach($request->artistes);
+        foreach ($request->artistes as $artiste) {
+            $evenement->artistes()->syncWithoutDetaching([$artiste['id'] => ['ordre' => $artiste['ordre']]]);
+        }
+
         $evenement->prix()->createMany($request->prix);
 
         return response()->json(['message' => 'Evenement created'], 201);
     }
+
 
     public function lieux(Request $request) : JsonResponse
     {
@@ -145,6 +148,83 @@ class EvenementController extends Controller
 
         return response()->json($this->cat_dispo($evenement));
     }
+
+    public function update(Request $request, int $id) : JsonResponse
+    {
+        $user = $request->user();
+        if ($user->role != UserRole::GESTIONNAIRE && $user->role != UserRole::ADMIN) {
+            return response()->json(['message' => 'Unauthorized'], 401);
+        }
+
+        $evenement = Evenement::find($id);
+        if (!$evenement) {
+            return response()->json(['message' => 'Evenement not found'], 404);
+        }
+
+        $validatedData = $request->validate([
+            'titre' => 'sometimes|required',
+            'type' => 'sometimes|required',
+            'description' => 'sometimes|required',
+            'date_event' => 'sometimes|required',
+            'lieu_id' => 'sometimes|required|exists:lieux,id',
+        ]);
+
+        $evenement->fill($validatedData);
+        $evenement->save();
+
+        return response()->json(['message' => 'Evenement updated']);
+    }
+
+    public function updatePrix(Request $request, int $id) : JsonResponse
+    {
+        $user = $request->user();
+        if ($user->role != UserRole::GESTIONNAIRE && $user->role != UserRole::ADMIN) {
+            return response()->json(['message' => 'Unauthorized'], 401);
+        }
+
+        $evenement = Evenement::find($id);
+        if (!$evenement) {
+            return response()->json(['message' => 'Evenement not found'], 404);
+        }
+
+        $request->validate([
+            'prix' => 'required|array',
+            'prix.*.categorie' => 'required',
+            'prix.*.nombre' => 'required|integer',
+            'prix.*.valeur' => 'required|numeric',
+        ]);
+
+        $evenement->prix()->delete();
+        $evenement->prix()->createMany($request->prix);
+
+        return response()->json(['message' => 'Prix updated']);
+    }
+
+    public function updateArtistes(Request $request, int $id) : JsonResponse
+    {
+        $user = $request->user();
+        if ($user->role != UserRole::GESTIONNAIRE && $user->role != UserRole::ADMIN) {
+            return response()->json(['message' => 'Unauthorized'], 401);
+        }
+
+        $evenement = Evenement::find($id);
+        if (!$evenement) {
+            return response()->json(['message' => 'Evenement not found'], 404);
+        }
+
+        $request->validate([
+            'artistes' => 'required|array',
+            'artistes.*.id' => 'required|exists:artistes,id',
+            'artistes.*.ordre' => 'required|integer',
+        ]);
+
+        foreach ($request->artistes as $artiste) {
+            $evenement->artistes()->syncWithoutDetaching([$artiste['id'] => ['ordre' => $artiste['ordre']]]);
+        }
+
+        return response()->json(['message' => 'Artistes updated']);
+    }
+
 
     public function destroy(Request $request, int $id) : JsonResponse
     {
