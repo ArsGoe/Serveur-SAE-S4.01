@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\ClientController;
+use App\Http\Controllers\Api\EvenementController;
 use App\Http\Controllers\Api\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -66,3 +67,33 @@ Route::prefix('users')->group(function () {
         ->middleware(['auth', 'role:admin'])
         ->name('users.destroy ');
 });
+
+Route::prefix('evenements')->group(function () {
+   Route::get("/", [EvenementController::class, 'index'])
+        ->name('evenements.index');
+   Route::get("/{id}", [EvenementController::class, 'show'])->where('id', '[0-9]+')
+        ->middleware(['auth'])
+        ->name('evenements.show');
+   Route::post("/", [EvenementController::class, 'store'])
+        ->middleware(['auth'])
+        ->name('evenements.store');
+   Route::delete("/{id}", [EvenementController::class, 'destroy'])->where('id', '[0-9]+')
+        ->middleware(['auth'])
+        ->name('evenements.destroy');
+   Route::get("/{id}/prix", [EvenementController::class, 'prix'])->where('id', '[0-9]+')
+        ->middleware(['auth'])
+        ->name('evenements.prix');
+   Route::put("/{id}", [EvenementController::class, 'update'])->where('id', '[0-9]+')
+        ->middleware(['auth'])
+        ->name('evenements.update');
+   Route::put("/{id}/prix", [EvenementController::class, 'updatePrix'])->where('id', '[0-9]+')
+        ->middleware(['auth'])
+        ->name('evenements.updatePrix');
+   Route::put("/{id}/artistes", [EvenementController::class, 'updateArtistes'])->where('id', '[0-9]+')
+        ->middleware(['auth'])
+        ->name('evenements.updateArtistes');
+});
+
+Route::get('/lieux', [EvenementController::class, 'lieux'])
+    ->middleware(['auth'])
+    ->name('lieux.index');
