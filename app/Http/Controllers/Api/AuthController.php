@@ -60,8 +60,9 @@ class AuthController extends Controller {
             'email' => $request->email,
             'password' => Hash::make($request->password),
         ]);
-        $roleVisiteur = UserRole::where('nom', UserRole::NON_ACTIF)->first();
-        $user->roles()->attach([$roleVisiteur->id]);
+//        $roleVisiteur = UserRole::where('nom', UserRole::NON_ACTIF)->first();
+            $user->role =  UserRole::ACTIF;
+//        $user->roles()->attach([$roleVisiteur->id]);
         $token = auth()->tokenById($user->id);
         return response()->json([
             'status' => 'success',
