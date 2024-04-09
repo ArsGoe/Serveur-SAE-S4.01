@@ -80,6 +80,9 @@ Route::prefix('evenements')->group(function () {
    Route::delete("/{id}", [EvenementController::class, 'destroy'])->where('id', '[0-9]+')
         ->middleware(['auth'])
         ->name('evenements.destroy');
+   Route::get("/{id}/prix", [EvenementController::class, 'prix'])->where('id', '[0-9]+')
+        ->middleware(['auth'])
+        ->name('evenements.prix');
 });
 
 Route::get('/lieux', [EvenementController::class, 'lieux'])

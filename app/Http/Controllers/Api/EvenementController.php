@@ -131,6 +131,21 @@ class EvenementController extends Controller
         return response()->json($lieux);
     }
 
+    public function prix(Request $request, int $id) : JsonResponse
+    {
+        $user = $request->user();
+        if ($user->role == UserRole::NON_ACTIF) {
+            return response()->json(['message' => 'Unauthorized'], 401);
+        }
+
+        $evenement = Evenement::find($id);
+        if (!$evenement) {
+            return response()->json(['message' => 'Evenement not found'], 404);
+        }
+
+        return response()->json($this->cat_dispo($evenement));
+    }
+
     public function destroy(Request $request, int $id) : JsonResponse
     {
         $user = $request->user();
