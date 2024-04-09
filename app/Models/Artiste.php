@@ -19,7 +19,6 @@ class Artiste extends Model
     public function evenements(): BelongsToMany
     {
         return $this->belongsToMany(Evenement::class, 'participants', 'artiste_id', 'evenement_id')
-            ->wherePivot('evenement_id', $this->id)
             ->withPivot('ordre');
     }
 }

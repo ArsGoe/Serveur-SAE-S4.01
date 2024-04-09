@@ -6,7 +6,9 @@ use App\Http\Controllers\Controller;
 
 //use App\Http\Requests\UserRequest;
 use App\Http\Requests\UserRequest;
+use App\Http\Resources\ClientResource;
 use App\Http\Resources\UserResource;
+use App\Models\Client;
 use App\Models\Enums\UserRole;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
@@ -58,8 +60,9 @@ class AuthController extends Controller {
             'email' => $request->email,
             'password' => Hash::make($request->password),
         ]);
-        $roleVisiteur = UserRole::where('nom', UserRole::NON_ACTIF)->first();
-        $user->roles()->attach([$roleVisiteur->id]);
+//        $roleVisiteur = UserRole::where('nom', UserRole::NON_ACTIF)->first();
+            $user->role =  UserRole::ACTIF;
+//        $user->roles()->attach([$roleVisiteur->id]);
         $token = auth()->tokenById($user->id);
         return response()->json([
             'status' => 'success',
@@ -98,6 +101,7 @@ class AuthController extends Controller {
         return response()->json([
             'status' => 'success',
             'user' => new UserResource(Auth::user()),
+            'client' => new ClientResource(Client::all()->where('user_id',Auth::user()['id']))
         ]);
     }
 }
