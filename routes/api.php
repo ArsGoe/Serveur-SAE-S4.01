@@ -89,6 +89,9 @@ Route::prefix('evenements')->group(function () {
    Route::put("/{id}/prix", [EvenementController::class, 'updatePrix'])->where('id', '[0-9]+')
         ->middleware(['auth'])
         ->name('evenements.updatePrix');
+   Route::put("/{id}/artistes", [EvenementController::class, 'updateArtistes'])->where('id', '[0-9]+')
+        ->middleware(['auth'])
+        ->name('evenements.updateArtistes');
 });
 
 Route::get('/lieux', [EvenementController::class, 'lieux'])

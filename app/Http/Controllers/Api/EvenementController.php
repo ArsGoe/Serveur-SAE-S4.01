@@ -197,6 +197,32 @@ class EvenementController extends Controller
         return response()->json(['message' => 'Prix updated']);
     }
 
+    public function updateArtistes(Request $request, int $id) : JsonResponse
+    {
+        $user = $request->user();
+        if ($user->role != UserRole::GESTIONNAIRE && $user->role != UserRole::ADMIN) {
+            return response()->json(['message' => 'Unauthorized'], 401);
+        }
+
+        $evenement = Evenement::find($id);
+        if (!$evenement) {
+            return response()->json(['message' => 'Evenement not found'], 404);
+        }
+
+        $request->validate([
+            'artistes' => 'required|array',
+            'artistes.*.id' => 'required|exists:artistes,id',
+            'artistes.*.ordre' => 'required|integer',
+        ]);
+
+        foreach ($request->artistes as $artiste) {
+            $evenement->artistes()->syncWithoutDetaching([$artiste['id'] => ['ordre' => $artiste['ordre']]]);
+        }
+
+        return response()->json(['message' => 'Artistes updated']);
+    }
+
+
     public function destroy(Request $request, int $id) : JsonResponse
     {
         $user = $request->user();
