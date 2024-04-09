@@ -19,7 +19,9 @@ return new class extends Migration
             $table->enum('type', Type::getValues());
             $table->string('description');
             $table->datetime('date_event');
-            $table->foreignId('lieu_id')->references('id')->on('lieux');
+            $table->foreignId('lieu_id')->references('id')->on('lieux')
+                ->onDelete('cascade')
+                ->onUpdate('cascade');
         });
     }
 
