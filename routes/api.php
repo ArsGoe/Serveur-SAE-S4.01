@@ -74,4 +74,7 @@ Route::prefix('evenements')->group(function () {
    Route::get("/{id}", [EvenementController::class, 'show'])->where('id', '[0-9]+')
         ->middleware(['auth'])
         ->name('evenements.show');
+   Route::post("/", [EvenementController::class, 'store'])
+        ->middleware(['auth'])
+        ->name('evenements.store');
 });

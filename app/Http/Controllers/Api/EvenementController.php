@@ -82,4 +82,39 @@ class EvenementController extends Controller
         return $cats;
     }
 
+    public function store(Request $request) : JsonResponse
+    {
+        $user = $request->user();
+        if ($user->role != UserRole::GESTIONNAIRE && $user->role != UserRole::ADMIN) {
+            return response()->json(['message' => 'Unauthorized'], 401);
+        }
+
+        $request->validate([
+            'titre' => 'required',
+            'type' => 'required',
+            'description' => 'required',
+            'date_event' => 'required',
+            'lieu_id' => 'required|exists:lieux,id',
+            'artistes' => 'required|array',
+            'artistes.*.id' => 'required|exists:artistes,id',
+            'artistes.*.ordre' => 'required|integer',
+            'prix' => 'required|array',
+            'prix.*.categorie' => 'required',
+            'prix.*.nombre' => 'required|integer',
+            'prix.*.valeur' => 'required|numeric',
+        ]);
+
+        $evenement = new Evenement();
+        $evenement->titre = $request->titre;
+        $evenement->type = $request->type;
+        $evenement->description = $request->description;
+        $evenement->date_event = $request->date_event;
+        $evenement->lieu_id = $request->lieu_id;
+        $evenement->save();
+
+        $evenement->artistes()->attach($request->artistes);
+        $evenement->prix()->createMany($request->prix);
+
+        return response()->json(['message' => 'Evenement created'], 201);
+    }
 }
