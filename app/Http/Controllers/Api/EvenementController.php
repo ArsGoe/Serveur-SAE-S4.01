@@ -58,7 +58,7 @@ class EvenementController extends Controller
         );
     }
 
-    public function cat_dispo($evenement): array
+    public static function cat_dispo($evenement): array
     {
         $cats = [];
 
