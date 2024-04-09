@@ -45,9 +45,9 @@ class User extends Authenticatable implements JWTSubject {
         'password' => 'hashed',
     ];
 
-    public function client(): HasOne
+    public function client(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
-        return $this->hasOne(Client::class);
+        return $this->belongsTo(Client::class);
     }
 
     public function getJWTIdentifier() {
