@@ -11,6 +11,7 @@ use App\Models\Evenement;
 use App\Models\Prix;
 use App\Models\Reservation;
 use Database\Seeders\BilletSeeder;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -151,6 +152,75 @@ class ReservationController extends Controller
             $billet->reservation_id = $reservation->id;
             $billet->save();
         }
+    }
+
+    public function statsEvenement(Request $request, int $idEvent): JsonResponse
+    {
+        $user = $request->user();
+        if ($user->role != UserRole::GESTIONNAIRE && $user->role != UserRole::ADMIN) {
+            return response()->json(['message' => 'Unauthorized'], 401);
+        }
+
+        $evenement = Evenement::find($idEvent);
+        if (!$evenement) {
+            return response()->json(['message' => 'Evenement not found'], 404);
+        }
+
+        $cats = EvenementController::cat_dispo($evenement);
+
+        $nbPlacesPaye = self::nbPlacesPaye($evenement);
+        $nbPlaces = self::nbPlaces($evenement);
+        $nbPlacesEdite = self::nbPlacesEdite($evenement);
+
+        if ($nbPlaces == 0) {
+            $nbPlaces = 1;
+        }
+        $nb_clients = $evenement->reservations->pluck('client_id')->unique()->count();
+        return response()->json(
+            ["reservations" => $cats,
+                "pourcentage_paye" => ($nbPlacesPaye / $nbPlaces)*100,
+                "pourcentage_edit" => ($nbPlacesEdite / $nbPlaces)*100,
+                "nb_cients" => $nb_clients]
+        );
+    }
+
+    public static function nbPlaces(Evenement $evenement)
+    {
+        $reservations =  $evenement->reservations;
+        $nbPlaces = 0;
+        foreach ($reservations as $reservation) {
+            $billets = $reservation->billets;
+            foreach ($billets as $billet) {
+                $nbPlaces += $billet->quantite;
+            }
+        }
+        return $nbPlaces;
+    }
+
+    public static function nbPlacesPaye(Evenement $evenement)
+    {
+        $reservationsPaye = $evenement->reservations->where("statut", Statut::PAYE);
+        $nbPlacesPaye = 0;
+        foreach ($reservationsPaye as $reservation) {
+            $billets = $reservation->billets;
+            foreach ($billets as $billet) {
+                $nbPlacesPaye += $billet->quantite;
+            }
+        }
+        return $nbPlacesPaye;
+    }
+
+    public static function nbPlacesEdite(Evenement $evenement)
+    {
+        $reservationsEdite = $evenement->reservations->where("statut", Statut::BILLET_EDITE);
+        $nbPlacesEdite = 0;
+        foreach ($reservationsEdite as $reservation) {
+            $billets = $reservation->billets;
+            foreach ($billets as $billet) {
+                $nbPlacesEdite += $billet->quantite;
+            }
+        }
+        return $nbPlacesEdite;
     }
 
     public function destroy(Request $request, int $id)
