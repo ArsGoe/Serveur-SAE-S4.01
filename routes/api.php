@@ -103,6 +103,9 @@ Route::prefix('reservations')->group(function () {
     Route::get('/', [ReservationController::class, 'reservationsClient'])
         ->middleware(['auth', 'role:ACTIF'])
         ->name('reservations.reservationsClient');
+    Route::post('/', [ReservationController::class, 'store'])
+        ->middleware(['auth', 'role:ACTIF,ADMIN,GESTIONNAIRE'])
+        ->name('reservations.store');
 });
 
 Route::get('/lieux', [EvenementController::class, 'lieux'])
