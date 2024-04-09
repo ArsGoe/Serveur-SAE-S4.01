@@ -104,7 +104,6 @@ class EvenementController extends Controller
             'prix.*.nombre' => 'required|integer',
             'prix.*.valeur' => 'required|numeric',
         ]);
-
         $evenement = new Evenement();
         $evenement->titre = $request->titre;
         $evenement->type = $request->type;
@@ -113,11 +112,15 @@ class EvenementController extends Controller
         $evenement->lieu_id = $request->lieu_id;
         $evenement->save();
 
-        $evenement->artistes()->attach($request->artistes);
+        foreach ($request->artistes as $artiste) {
+            $evenement->artistes()->syncWithoutDetaching([$artiste['id'] => ['ordre' => $artiste['ordre']]]);
+        }
+
         $evenement->prix()->createMany($request->prix);
 
         return response()->json(['message' => 'Evenement created'], 201);
     }
+
 
     public function lieux(Request $request) : JsonResponse
     {
