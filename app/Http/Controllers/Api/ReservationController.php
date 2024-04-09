@@ -152,4 +152,18 @@ class ReservationController extends Controller
             $billet->save();
         }
     }
+
+    public function destroy(Request $request, int $id)
+    {
+        $reservation = Reservation::find($id);
+        if (!$reservation) {
+            return response()->json(['message' => 'Reservation not found'], 404);
+        }
+        if ($reservation->statut !== Statut::EN_ATTENTE || now()->diffInHours($reservation->date_res) < 12) {
+            return response()->json(['message' => 'You can\'t delete this reservation'], 400);
+        }
+        $reservation->delete();
+
+        return response()->json(['message' => 'Reservation deleted']);
+    }
 }
