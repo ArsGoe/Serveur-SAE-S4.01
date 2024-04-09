@@ -106,6 +106,9 @@ Route::prefix('reservations')->group(function () {
     Route::post('/', [ReservationController::class, 'store'])
         ->middleware(['auth', 'role:ACTIF,ADMIN,GESTIONNAIRE'])
         ->name('reservations.store');
+    Route::delete("/{id}", [ReservationController::class, 'destroy'])->where('id', '[0-9]+')
+        ->middleware(['auth', 'role:GESTIONNAIRE'])
+        ->name('reservations.destroy');
 });
 
 Route::get('/lieux', [EvenementController::class, 'lieux'])
