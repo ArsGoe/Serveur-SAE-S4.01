@@ -56,9 +56,16 @@ class AuthController extends Controller {
 
     public function register(UserRequest $request) {
         $user = User::create([
-            'name' => $request->name,
+            'name' => $request->nom." ".$request->prenom,
             'email' => $request->email,
             'password' => Hash::make($request->password),
+        ]);
+        $client = Client::create([
+            'nom' => $request->nom,
+            'prenom' => $request->prenom,
+            'adresse' => $request->adresse,
+            'code_postal' => $request->code_postal,
+            'ville' => $request->ville
         ]);
 //        $roleVisiteur = UserRole::where('nom', UserRole::NON_ACTIF)->first();
             $user->role =  UserRole::ACTIF;
