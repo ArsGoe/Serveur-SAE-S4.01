@@ -65,7 +65,7 @@ Route::prefix('users')->group(function () {
         ->name('users.profil ');
     Route::put('/{id}', [UserController::class, 'update'])->where('id', '[0-9]+')
         ->middleware(['auth', 'role:Gestionnaire'])
-        ->name('clients.update');
+        ->name('users.update');
     Route::delete('/{id}', [UserController::class, 'destroy'])->where('id', '[0-9]+')
         ->middleware(['auth', 'role:admin'])
         ->name('users.destroy ');
