@@ -25,6 +25,7 @@ class UserController extends Controller
         return response()->json([
             'status' => true,
             'message' =>  [
+                'id'=>$client->id,
                 'nom'=> $client->nom,
                 'prenom' => $client->prenom,
                 'adresse' => $client->adresse,
@@ -32,7 +33,8 @@ class UserController extends Controller
                 'ville' => $client->ville,
                 'name' => $user->name,
                 'email' => $user->email,
-                'role' =>$user->role
+                'role' =>$user->role,
+                'password' =>$user->password,
             ]
         ]);
     }
