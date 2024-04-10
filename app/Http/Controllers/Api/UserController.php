@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\UserRequest;
 use App\Models\Client;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -36,4 +37,17 @@ class UserController extends Controller
         ]);
     }
 
+    public function update(UserRequest $request, string $id)
+    {
+        $user = User::findOrFail($id);
+        $user->nom = $request->name;
+        $user->prenom = $request->email;
+        $user->adresse = $request->password;
+        $user->save();
+        return response()->json([
+            'status' => true,
+            'message' => "User modifié avec succès",
+            'user' => $user
+        ]);
+    }
 }
