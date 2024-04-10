@@ -40,9 +40,19 @@ class UserController extends Controller
     public function update(UserRequest $request, string $id)
     {
         $user = User::findOrFail($id);
-        $user->name = $request->name;
-        $user->email = $request->email;
-        $user->password = $request->password;
+        if ($request->name) {
+            $user->name = $request->name;
+        }
+        if ($request->email) {
+            $user->email = $request->email;
+        }
+        if ($request->password) {
+            $user->password = $request->password;
+        }
+        if ($request->role) {
+            $user->role = $request->role;
+        }
+
         $user->save();
         return response()->json([
             'status' => true,
