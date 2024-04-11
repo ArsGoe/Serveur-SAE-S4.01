@@ -71,6 +71,7 @@ class AuthController extends Controller {
         $client->save();
 //        $roleVisiteur = UserRole::where('nom', UserRole::NON_ACTIF)->first();
             $user->role =  UserRole::ACTIF;
+            $user->save();
 //        $user->roles()->attach([$roleVisiteur->id]);
         $token = auth()->tokenById($user->id);
         return response()->json([
