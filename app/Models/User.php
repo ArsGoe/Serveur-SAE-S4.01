@@ -11,6 +11,13 @@ use Laravel\Sanctum\HasApiTokens;
 use PHPOpenSourceSaver\JWTAuth\Contracts\JWTSubject;
 use OpenApi\Attributes as OA;
 
+#[OA\Schema(schema: 'User', title: 'Utilisateur', description: 'Un utilisateur connu de l\'application',
+    properties: [
+        new OA\Property(property: "id", type: "integer", format: "int64"),
+        new OA\Property(property: "name", type: "string"),
+        new OA\Property(property: "email", type: "string"),
+        new OA\Property(property: "role", type: "string")
+    ])]
 class User extends Authenticatable implements JWTSubject {
     use HasApiTokens, HasFactory, Notifiable;
 

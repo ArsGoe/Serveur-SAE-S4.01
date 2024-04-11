@@ -11,9 +11,11 @@ use App\Http\Resources\UserResource;
 use App\Models\Client;
 use App\Models\Enums\UserRole;
 use App\Models\User;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use OpenApi\Attributes as OA;
 
 
 class AuthController extends Controller {
@@ -21,8 +23,41 @@ class AuthController extends Controller {
         $this->middleware('auth:api', ['except' => ['login', 'register']]);
     }
 
-
-    public function login(Request $request) {
+    #[OA\Post(
+        path: "/login",
+        operationId: "login",
+        description: "Connect to api",
+        security: [],
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(properties: [
+                new OA\Property(property: 'email', type: 'string'),
+                new OA\Property(property: 'password', type: 'string'),
+            ]),
+        ),
+        tags: ["Auth"],
+        responses: [
+            new OA\Response(response: 200,
+                description: "Connection",
+                content: new OA\JsonContent(properties: [
+                    new OA\Property(property: "status", type: "string"),
+                    new OA\Property(property: "message", type: "string"),
+                    new OA\Property(property: "user", ref: "#/components/schemas/User", type: "object"),
+                    new OA\Property(property: "authorisation", properties: [
+                        new OA\Property(property: 'token', type: 'string'),
+                        new OA\Property(property: 'type', type: 'string')
+                    ], type: "object")
+                ], type: "object")),
+            new OA\Response(response: 401,
+                description: "Invalid connection",
+                content: new OA\JsonContent(properties: [
+                    new OA\Property(property: "status", type: "string"),
+                    new OA\Property(property: "message", type: "string"),
+                ], type: "object"))
+        ]
+    )]
+    public function login(Request $request): JsonResponse
+    {
         $request->validate([
             'email' => 'required|string|email',
             'password' => 'required|string|min:6',
