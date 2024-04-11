@@ -6,11 +6,33 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\UserRequest;
 use App\Models\Client;
 use App\Models\User;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use OpenApi\Attributes as OA;
 
 class UserController extends Controller
 {
+    #[OA\Delete(
+        path: "/users/{id}",
+        operationId: "destroy-user",
+        description: "Delete a user",
+        security: [["bearerAuth" => ["role" => "admin"]],],
+        tags: ["Users"],
+        parameters: [
+            new OA\Parameter(
+                name: "id",
+                description: "User ID",
+                in: "path", required: "true",
+                schema: new OA\Schema(type: "integer", format: 'int64'))
+        ],
+        responses: [
+            new OA\Response(response: 200,
+                description: "Delete a user",
+                content: new OA\JsonContent(properties: [
+                    new OA\Property(property: "status", type: "boolean"),
+                    new OA\Property(property: "message", type: "string"),
+                ], type: "object")
+            )
+        ]
+    )]
     public function destroy(string $id) {
         $user = User::findOrFail($id);
         $user->delete();
@@ -19,6 +41,46 @@ class UserController extends Controller
             'message' => "User Destroyed successfully!",
         ]);
     }
+
+    #[OA\Get(
+        path: "/users/{id}",
+        operationId: "profil",
+        description: "Get user profile",
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(properties: [
+                new OA\Property(property: 'token', type: 'string')
+            ]),
+        ),
+        tags: ["Users"],
+        parameters: [
+            new OA\Parameter(
+                name: "id",
+                description: "User ID",
+                in: "path", required: "true",
+                schema: new OA\Schema(type: "integer", format: 'int64'))
+        ],
+        responses: [
+            new OA\Response(response: 200,
+                description: "Get user profile",
+                content: new OA\JsonContent(properties: [
+                    new OA\Property(property: "status", type: "boolean"),
+                    new OA\Property(property: "message", properties: [
+                        new OA\Property(property: 'id', type: 'integer'),
+                        new OA\Property(property: 'nom', type: 'string'),
+                        new OA\Property(property: 'prenom', type: 'string'),
+                        new OA\Property(property: 'adresse', type: 'string'),
+                        new OA\Property(property: 'code_postal', type: 'string'),
+                        new OA\Property(property: 'ville', type: 'string'),
+                        new OA\Property(property: 'name', type: 'string'),
+                        new OA\Property(property: 'email', type: 'string'),
+                        new OA\Property(property: 'role', type: 'string'),
+                        new OA\Property(property: 'password', type: 'string'),
+                    ], type: "object")
+                ], type: "object")
+            )
+        ]
+    )]
     public function profil(string $id) {
         $user = User::findOrFail($id);
         $client = Client::all()->where('user_id',$id)->first();
@@ -39,6 +101,40 @@ class UserController extends Controller
         ]);
     }
 
+    #[OA\Put(
+        path: "/users/{id}",
+        operationId: "update-user",
+        description: "Update a user",
+        security: [["bearerAuth" => ["role" => "gestionnaire"]],],
+        requestBody: new OA\RequestBody(
+            description: "User data",
+            required: true,
+            content: new OA\JsonContent(properties: [
+                new OA\Property(property: "name", type: "string"),
+                new OA\Property(property: "email", type: "string"),
+                new OA\Property(property: "password", type: "string"),
+                new OA\Property(property: "role", type: "string"),
+            ], type: "object")
+        ),
+        tags: ["Users"],
+        parameters: [
+            new OA\Parameter(
+                name: "id",
+                description: "User ID",
+                in: "path", required: "true",
+                schema: new OA\Schema(type: "integer", format: 'int64'))
+        ],
+        responses: [
+            new OA\Response(response: 200,
+                description: "Update a user",
+                content: new OA\JsonContent(properties: [
+                    new OA\Property(property: "status", type: "boolean"),
+                    new OA\Property(property: "message", type: "string"),
+                    new OA\Property(property: "user", ref: "#/components/schemas/User", type: "object"),
+                ], type: "object")
+            )
+        ]
+    )]
     public function update(UserRequest $request, string $id)
     {
         $user = User::findOrFail($id);
