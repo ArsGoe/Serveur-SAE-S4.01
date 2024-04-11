@@ -153,8 +153,23 @@ class AuthController extends Controller {
         ]);
     }
 
-
-    public function logout() {
+    #[OA\Post(
+        path: "/logout",
+        operationId: "logout",
+        description: "Logout of a user from the application",
+        tags: ["Auth"],
+        responses: [
+            new OA\Response(response: 200,
+                description: "valid logout",
+                content: new OA\JsonContent(properties: [
+                    new OA\Property(property: "status", type: "string"),
+                    new OA\Property(property: "message", type: "string"),
+                ])
+            )
+        ]
+    )]
+    public function logout(): JsonResponse
+    {
         Auth::logout();
         return response()->json([
             'status' => 'success',
@@ -162,8 +177,33 @@ class AuthController extends Controller {
         ]);
     }
 
-
-    public function refresh() {
+    #[OA\Post(
+        path: "/refresh",
+        operationId: "refresh",
+        description: "Refresh connection",
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(properties: [
+                new OA\Property(property: 'token', type: 'string')
+            ]),
+        ),
+        tags: ["Auth"],
+        responses: [
+            new OA\Response(response: 200,
+                description: "Connection",
+                content: new OA\JsonContent(properties: [
+                    new OA\Property(property: "status", type: "string"),
+                    new OA\Property(property: "message", type: "string"),
+                    new OA\Property(property: "user", ref: "#/components/schemas/User", type: "object"),
+                    new OA\Property(property: "authorisation", properties: [
+                        new OA\Property(property: 'token', type: 'string'),
+                        new OA\Property(property: 'type', type: 'string')
+                    ], type: "object")
+                ], type: "object"))
+        ]
+    )]
+    public function refresh(): JsonResponse
+    {
         return response()->json([
             'status' => 'success',
             'user' => new UserResource(Auth::user()),
@@ -174,8 +214,29 @@ class AuthController extends Controller {
         ]);
     }
 
-
-    public function me() {
+    #[OA\Get(
+        path: "/me",
+        operationId: "me",
+        description: "Get the authenticated user",
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(properties: [
+                new OA\Property(property: 'token', type: 'string')
+            ]),
+        ),
+        tags: ["Auth"],
+        responses: [
+            new OA\Response(response: 200,
+                description: "Get the authenticated user",
+                content: new OA\JsonContent(properties: [
+                    new OA\Property(property: "status", type: "string"),
+                    new OA\Property(property: "user", ref: "#/components/schemas/User", type: "object"),
+                    new OA\Property(property: "client", ref: "#/components/schemas/Client", type: "object")
+                ], type: "object"))
+        ]
+    )]
+    public function me(): JsonResponse
+    {
         return response()->json([
             'status' => 'success',
             'user' => new UserResource(Auth::user()),
