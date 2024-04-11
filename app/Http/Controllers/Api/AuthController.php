@@ -88,8 +88,40 @@ class AuthController extends Controller {
         ]);
     }
 
-
-    public function register(UserRequest $request) {
+    #[OA\Post(
+        path: "/register",
+        operationId: "register",
+        description: "Register new Client",
+        security: [],
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(properties: [
+                new OA\Property(property: 'nom', type: 'string'),
+                new OA\Property(property: 'prenom', type: 'string'),
+                new OA\Property(property: 'adresse', type: 'string'),
+                new OA\Property(property: 'code_postal', type: 'string'),
+                new OA\Property(property: 'email', type: 'string'),
+                new OA\Property(property: 'password', type: 'string'),
+            ]),
+        ),
+        tags: ["Auth"],
+        responses: [
+            new OA\Response(response: 200,
+                description: "Connect",
+                content: new OA\JsonContent(properties: [
+                    new OA\Property(property: "status", type: "string"),
+                    new OA\Property(property: "message", type: "string"),
+                    new OA\Property(property: "user", ref: "#/components/schemas/User", type: "object"),
+                    new OA\Property(property: "client", ref: "#/components/schemas/Client", type: "object"),
+                    new OA\Property(property: "authorisation", properties: [
+                        new OA\Property(property: 'token', type: 'string'),
+                        new OA\Property(property: 'type', type: 'string')
+                    ], type: "object")
+                ], type: "object"))
+        ]
+    )]
+    public function register(UserRequest $request): JsonResponse
+    {
         $user = User::create([
             'name' => $request->nom." ".$request->prenom,
             'email' => $request->email,
