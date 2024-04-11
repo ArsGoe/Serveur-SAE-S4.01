@@ -176,8 +176,33 @@ class AuthController extends Controller {
         ]);
     }
 
-
-    public function refresh() {
+    #[OA\Post(
+        path: "/refresh",
+        operationId: "refresh",
+        description: "Refresh connection",
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(properties: [
+                new OA\Property(property: 'token', type: 'string')
+            ]),
+        ),
+        tags: ["Auth"],
+        responses: [
+            new OA\Response(response: 200,
+                description: "Connection",
+                content: new OA\JsonContent(properties: [
+                    new OA\Property(property: "status", type: "string"),
+                    new OA\Property(property: "message", type: "string"),
+                    new OA\Property(property: "user", ref: "#/components/schemas/User", type: "object"),
+                    new OA\Property(property: "authorisation", properties: [
+                        new OA\Property(property: 'token', type: 'string'),
+                        new OA\Property(property: 'type', type: 'string')
+                    ], type: "object")
+                ], type: "object"))
+        ]
+    )]
+    public function refresh(): JsonResponse
+    {
         return response()->json([
             'status' => 'success',
             'user' => new UserResource(Auth::user()),
