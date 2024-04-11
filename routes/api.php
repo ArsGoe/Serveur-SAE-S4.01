@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\ClientController;
 use App\Http\Controllers\Api\EvenementController;
+use App\Http\Controllers\Api\ReservationController;
 use App\Http\Controllers\Api\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -24,7 +25,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::controller(AuthController::class)->group(function () {
     Route::post('login', 'login')->name('login');
-    Route::post('register', 'register');
+    Route::post('register', 'register')->name('register');
     Route::post('logout', 'logout');
     Route::post('refresh', 'refresh');
     Route::get('me', 'me');
@@ -63,6 +64,9 @@ Route::prefix('users')->group(function () {
     Route::get('/{id}', [UserController::class, 'profil'])->where('id', '[0-9]+')
         ->middleware(['auth'])
         ->name('users.profil ');
+    Route::put('/{id}', [UserController::class, 'update'])->where('id', '[0-9]+')
+        ->middleware(['auth', 'role:Gestionnaire'])
+        ->name('users.update');
     Route::delete('/{id}', [UserController::class, 'destroy'])->where('id', '[0-9]+')
         ->middleware(['auth', 'role:admin'])
         ->name('users.destroy ');
@@ -92,6 +96,28 @@ Route::prefix('evenements')->group(function () {
    Route::put("/{id}/artistes", [EvenementController::class, 'updateArtistes'])->where('id', '[0-9]+')
         ->middleware(['auth'])
         ->name('evenements.updateArtistes');
+    Route::get('/{id}/reservations', [ReservationController::class, 'reservationsEvent'])
+        ->where('id', '[0-9]+')
+        ->middleware(['auth', 'role:Gestionnaire,admin'])
+        ->name('reservations.reservationsEvent');
+});
+
+Route::prefix('reservations')->group(function () {
+    Route::get('/', [ReservationController::class, 'reservationsClient'])
+        ->middleware(['auth', 'role:ACTIF'])
+        ->name('reservations.reservationsClient');
+    Route::post('/', [ReservationController::class, 'store'])
+        ->middleware(['auth', 'role:ACTIF,ADMIN,GESTIONNAIRE'])
+        ->name('reservations.store');
+    Route::delete("/{id}", [ReservationController::class, 'destroy'])->where('id', '[0-9]+')
+        ->middleware(['auth', 'role:GESTIONNAIRE'])
+        ->name('reservations.destroy');
+    Route::get('/{id}/stats', [ReservationController::class, 'statsEvenement'])->where('id', '[0-9]+')
+        ->middleware(['auth'])
+        ->name('reservations.stats');
+    Route::post('/{id}/paiement', [ReservationController::class, 'paiement'])
+        ->middleware(['auth', 'role:ACTIF'])
+        ->name('reservations.paiement');
 });
 
 Route::get('/lieux', [EvenementController::class, 'lieux'])

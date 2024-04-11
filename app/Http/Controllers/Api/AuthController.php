@@ -56,10 +56,19 @@ class AuthController extends Controller {
 
     public function register(UserRequest $request) {
         $user = User::create([
-            'name' => $request->name,
+            'name' => $request->nom." ".$request->prenom,
             'email' => $request->email,
             'password' => Hash::make($request->password),
         ]);
+        $client = new Client();
+        $client->nom = $request->nom;
+        $client->prenom = $request->prenom;
+        $client->adresse = $request->adresse;
+        $client->code_postal = $request->code_postal;
+        $client->ville = $request->ville;
+        $client->avatar = "https://www.intima-et-moi.fr/mon-hygiene-intime/quel-est-le-ph-de-la-zone-intime/";
+        $client->user_id = User::findOrFail(User::findbyemail($user->email))->id;
+        $client->save();
 //        $roleVisiteur = UserRole::where('nom', UserRole::NON_ACTIF)->first();
             $user->role =  UserRole::ACTIF;
 //        $user->roles()->attach([$roleVisiteur->id]);
@@ -68,6 +77,7 @@ class AuthController extends Controller {
             'status' => 'success',
             'message' => 'Bienvenue dans notre communauté',
             'user' => new UserResource($user),
+            'client' => new ClientResource($client),
             'authorisation' => [
                 'token' => $token,
                 'type' => 'bearer',

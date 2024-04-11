@@ -31,13 +31,22 @@ class BilletSeeder extends Seeder
 
         // update montant reservation
         foreach ($reservations as $reservation) {
-            $montant = 0;
-            foreach ($reservation->billets as $billet) {
-                $montant += $billet->prix->valeur * $billet->quantite;
-            }
-            $reservation->nb_billets = $reservation->billets->count();
-            $reservation->montant = $montant;
-            $reservation->update();
+            $this->calculMontant($reservation);
         }
+    }
+
+    /**
+     * @param mixed $reservation
+     * @return void
+     */
+    public static function calculMontant(mixed $reservation): void
+    {
+        $montant = 0;
+        foreach ($reservation->billets as $billet) {
+            $montant += $billet->prix->valeur * $billet->quantite;
+        }
+        $reservation->nb_billets = $reservation->billets->count();
+        $reservation->montant = $montant;
+        $reservation->update();
     }
 }
