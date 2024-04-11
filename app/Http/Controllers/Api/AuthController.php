@@ -152,8 +152,23 @@ class AuthController extends Controller {
         ]);
     }
 
-
-    public function logout() {
+    #[OA\Post(
+        path: "/logout",
+        operationId: "logout",
+        description: "Logout of a user from the application",
+        tags: ["Auth"],
+        responses: [
+            new OA\Response(response: 200,
+                description: "valid logout",
+                content: new OA\JsonContent(properties: [
+                    new OA\Property(property: "status", type: "string"),
+                    new OA\Property(property: "message", type: "string"),
+                ])
+            )
+        ]
+    )]
+    public function logout(): JsonResponse
+    {
         Auth::logout();
         return response()->json([
             'status' => 'success',
