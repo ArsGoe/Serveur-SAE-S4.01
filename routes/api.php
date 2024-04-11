@@ -112,6 +112,9 @@ Route::prefix('reservations')->group(function () {
     Route::delete("/{id}", [ReservationController::class, 'destroy'])->where('id', '[0-9]+')
         ->middleware(['auth', 'role:GESTIONNAIRE'])
         ->name('reservations.destroy');
+    Route::get("/{id}", [ReservationController::class, 'reservation'])
+        ->middleware(['auth', 'role:ACTIF'])
+        ->name('reservations.reservation');
     Route::get('/{id}/stats', [ReservationController::class, 'statsEvenement'])->where('id', '[0-9]+')
         ->middleware(['auth'])
         ->name('reservations.stats');

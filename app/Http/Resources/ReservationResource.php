@@ -15,6 +15,7 @@ class ReservationResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
+            'id'=> $this->id,
             'statut' => $this->statut,
             'date_res' => $this->date_res,
             'billets' => BilletResource::collection($this->whenLoaded('billets')),

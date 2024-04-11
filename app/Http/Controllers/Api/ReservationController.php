@@ -34,6 +34,21 @@ class ReservationController extends Controller
         return ReservationResource::collection($reservations);
     }
 
+    public function reservation(Request $request)
+    {
+        $id_reservation = $request->id;
+        $reservation = Reservation::where('id', $id_reservation)->get();
+
+        $reservation->map(function ($reservation) {
+            $reservation->load('billets.prix');
+            $reservation->billets->map(function ($billet) {
+                $billet->prix_unitaire = $billet->prix->valeur;
+            });
+        });
+
+        return ReservationResource::collection($reservation);
+    }
+
     public function reservationsEvent(Request $request, $evenement_id)
     {
         $dateDebut = $request->query('date_debut');
