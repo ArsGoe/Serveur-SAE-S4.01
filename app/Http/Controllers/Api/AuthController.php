@@ -213,8 +213,29 @@ class AuthController extends Controller {
         ]);
     }
 
-
-    public function me() {
+    #[OA\Get(
+        path: "/me",
+        operationId: "me",
+        description: "Get the authenticated user",
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(properties: [
+                new OA\Property(property: 'token', type: 'string')
+            ]),
+        ),
+        tags: ["Auth"],
+        responses: [
+            new OA\Response(response: 200,
+                description: "Get the authenticated user",
+                content: new OA\JsonContent(properties: [
+                    new OA\Property(property: "status", type: "string"),
+                    new OA\Property(property: "user", ref: "#/components/schemas/User", type: "object"),
+                    new OA\Property(property: "client", ref: "#/components/schemas/Client", type: "object")
+                ], type: "object"))
+        ]
+    )]
+    public function me(): JsonResponse
+    {
         return response()->json([
             'status' => 'success',
             'user' => new UserResource(Auth::user()),
