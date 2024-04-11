@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ReservationResource;
+use App\Jobs\SendMailPaiement;
 use App\Models\Billet;
+use App\Models\Client;
 use App\Models\Enums\Statut;
 use App\Models\Enums\UserRole;
 use App\Models\Evenement;
@@ -165,5 +167,25 @@ class ReservationController extends Controller
         $reservation->delete();
 
         return response()->json(['message' => 'Reservation deleted']);
+    }
+
+    public function paiement(int $id)
+    {
+        $reservation = Reservation::find($id);
+        if (!$reservation) {
+            return response()->json(['message' => 'Reservation not found'], 404);
+        }
+        if ($reservation->statut !== Statut::EN_ATTENTE) {
+            return response()->json(['message' => 'You can\'t pay for this reservation'], 400);
+        }
+        $client = Client::find($reservation->client_id);
+        SendMailPaiement::dispatch($client);
+
+        $reservation->statut = Statut::PAYE;
+        $reservation->save();
+
+
+
+        return response()->json(['message' => 'Reservation paid']);
     }
 }
