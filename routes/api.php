@@ -109,6 +109,9 @@ Route::prefix('reservations')->group(function () {
     Route::delete("/{id}", [ReservationController::class, 'destroy'])->where('id', '[0-9]+')
         ->middleware(['auth', 'role:GESTIONNAIRE'])
         ->name('reservations.destroy');
+    Route::post('/{id}/paiement', [ReservationController::class, 'paiement'])
+        ->middleware(['auth', 'role:ACTIF'])
+        ->name('reservations.paiement');
 });
 
 Route::get('/lieux', [EvenementController::class, 'lieux'])
