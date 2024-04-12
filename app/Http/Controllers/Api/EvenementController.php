@@ -11,9 +11,24 @@ use App\Models\Lieu;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use OpenApi\Attributes as OA;
 
 class EvenementController extends Controller
 {
+
+    #[OA\Get(
+        path: "/evenements",
+        operationId: "index-evenements",
+        description: "Liste des evenements",
+        tags: ["Evenements"],
+        responses: [
+            new OA\Response(response: 200,
+                description: "Liste des evenements",
+                content: new OA\JsonContent(properties: [
+                    new OA\Property(property: "evenements", ref: "#/components/schemas/Evenement", type: "object"),
+                ], type: "object"))
+        ]
+    )]
     public function index(Request $request) : JsonResponse
     {
         $evenements = Evenement::all();
@@ -41,6 +56,36 @@ class EvenementController extends Controller
        );
     }
 
+    #[OA\Get(
+        path: "/evenements/{id}",
+        operationId: "show-evenement",
+        description: "Affiche un evenement",
+        tags: ["Evenements"],
+        parameters: [
+            new OA\Parameter(
+                name: "id",
+                description: "Identifiant de l'evenement",
+                in: "path", required: true,
+                schema: new OA\Schema(type: "integer", format: 'int64'))
+        ],
+        responses: [
+            new OA\Response(response: 200,
+                description: "Affiche un evenement",
+                content: new OA\JsonContent(properties: [
+                    new OA\Property(property: "evenement", ref: "#/components/schemas/Evenement", type: "object"),
+                    new OA\Property(property: "cat_dispo", type: "array",
+                        items: new OA\Schema(ref: "#/components/schemas/cat_dispo"))],
+                    type: "object")),
+            new OA\Response(response: 401, description: "Non autorisé",
+                content: new OA\JsonContent(properties: [
+                    new OA\Property(property: "message", type: "string"),
+                ], type: "object")),
+            new OA\Response(response: 404, description: "Evenement non trouvé",
+                content: new OA\JsonContent(properties: [
+                    new OA\Property(property: "message", type: "string"),
+                ], type: "object"))
+        ]
+    )]
     public function show(Request $request, int $id) : JsonResponse
     {
         $user = $request->user();
@@ -58,6 +103,16 @@ class EvenementController extends Controller
         );
     }
 
+    #[OA\Schema(
+        schema: "cat_dispo",
+        properties: [
+            new OA\Property(property: "categorie", type: "string"),
+            new OA\Property(property: "prix", type: "number"),
+            new OA\Property(property: "nombre_places", type: "integer"),
+            new OA\Property(property: "nb_places_dispo", type: "integer"),
+        ],
+        type: "object"
+    )]
     public static function cat_dispo($evenement): array
     {
         $cats = [];
@@ -83,6 +138,23 @@ class EvenementController extends Controller
         return $cats;
     }
 
+    #[OA\Post(
+        path: "/evenements",
+        operationId: "store-evenement",
+        description: "Crée un evenement",
+        tags: ["Evenements"],
+        responses: [
+            new OA\Response(response: 201,
+                description: "Evenement créé",
+                content: new OA\JsonContent(properties: [
+                    new OA\Property(property: "message", type: "string"),
+                ], type: "object")),
+            new OA\Response(response: 401, description: "Non autorisé",
+                content: new OA\JsonContent(properties: [
+                    new OA\Property(property: "message", type: "string"),
+                ], type: "object"))
+        ]
+    )]
     public function store(Request $request) : JsonResponse
     {
         $user = $request->user();
@@ -121,7 +193,24 @@ class EvenementController extends Controller
         return response()->json(['message' => 'Evenement created'], 201);
     }
 
-
+    #[OA\Get(
+        path: "/lieux",
+        operationId: "lieux",
+        description: "list of lieux",
+        tags: ["Evenements"],
+        responses: [
+            new OA\Response(response: 200,
+                description: "Liste des lieux",
+                content: new OA\JsonContent(properties: [
+                    new OA\Property(property: "lieux", ref: "#/components/schemas/Lieu", type: "object"),
+                ], type: "object")),
+            new OA\Response(response: 401,
+                description: "Unauthorized",
+                content: new OA\JsonContent(properties: [
+                    new OA\Property(property: "message", type: "string"),
+                ], type: "object)"))
+        ]
+    )]
     public function lieux(Request $request) : JsonResponse
     {
         $user = $request->user();
@@ -149,6 +238,34 @@ class EvenementController extends Controller
         return response()->json($this->cat_dispo($evenement));
     }
 
+    #[OA\Put(
+        path: "/evenements/{id}",
+        operationId: "update-evenement",
+        description: "Met à jour un evenement",
+        tags: ["Evenements"],
+        parameters: [
+            new OA\Parameter(
+                name: "id",
+                description: "Identifiant de l'evenement",
+                in: "path", required: true,
+                schema: new OA\Schema(type: "integer", format: 'int64'))
+        ],
+        responses: [
+            new OA\Response(response: 200,
+                description: "Evenement mis à jour",
+                content: new OA\JsonContent(properties: [
+                    new OA\Property(property: "message", type: "string"),
+                ], type: "object")),
+            new OA\Response(response: 401, description: "Non autorisé",
+                content: new OA\JsonContent(properties: [
+                    new OA\Property(property: "message", type: "string"),
+                ], type: "object")),
+            new OA\Response(response: 404, description: "Evenement non trouvé",
+                content: new OA\JsonContent(properties: [
+                    new OA\Property(property: "message", type: "string"),
+                ], type: "object"))
+        ]
+    )]
     public function update(Request $request, int $id) : JsonResponse
     {
         $user = $request->user();
