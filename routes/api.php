@@ -118,7 +118,7 @@ Route::prefix('reservations')->group(function () {
     Route::get('/{id}/stats', [ReservationController::class, 'statsEvenement'])->where('id', '[0-9]+')
         ->middleware(['auth'])
         ->name('reservations.stats');
-    Route::post('/{id}/paiement', [ReservationController::class, 'paiement'])
+    Route::post('/{id}/paiement', [ReservationController::class, 'paiement'])->where('id', '[0-9]+')
         ->middleware(['auth', 'role:ACTIF'])
         ->name('reservations.paiement');
 });
