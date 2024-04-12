@@ -1,0 +1,336 @@
+openapi: 3.0.0
+info:
+  title: 'Api server TicketMain'
+  description: 'Api server documention for TicketMain'
+  version: 1.0.0
+servers:
+  -
+    url: 'http://localhost:8000/api'
+    description: 'Server doc'
+paths:
+  /login:
+    post:
+      tags:
+        - Auth
+      description: 'Connect to api'
+      operationId: login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+              type: object
+      responses:
+        '200':
+          description: Connection
+          content:
+            application/json:
+              schema:
+                properties:
+                  status: { type: string }
+                  message: { type: string }
+                  user: { $ref: '#/components/schemas/User' }
+                  authorisation: { properties: { token: { type: string }, type: { type: string } }, type: object }
+                type: object
+        '401':
+          description: 'Invalid connection'
+          content:
+            application/json:
+              schema:
+                properties:
+                  status: { type: string }
+                  message: { type: string }
+                type: object
+      security: []
+  /register:
+    post:
+      tags:
+        - Auth
+      description: 'Register new Client'
+      operationId: register
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              properties:
+                nom:
+                  type: string
+                prenom:
+                  type: string
+                adresse:
+                  type: string
+                code_postal:
+                  type: string
+                email:
+                  type: string
+                password:
+                  type: string
+              type: object
+      responses:
+        '200':
+          description: Connect
+          content:
+            application/json:
+              schema:
+                properties:
+                  status: { type: string }
+                  message: { type: string }
+                  user: { $ref: '#/components/schemas/User' }
+                  client: { $ref: '#/components/schemas/Client' }
+                  authorisation: { properties: { token: { type: string }, type: { type: string } }, type: object }
+                type: object
+      security: []
+  /logout:
+    post:
+      tags:
+        - Auth
+      description: 'Logout of a user from the application'
+      operationId: logout
+      responses:
+        '200':
+          description: 'valid logout'
+          content:
+            application/json:
+              schema:
+                properties:
+                  status: { type: string }
+                  message: { type: string }
+                type: object
+  /refresh:
+    post:
+      tags:
+        - Auth
+      description: 'Refresh connection'
+      operationId: refresh
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              properties:
+                token:
+                  type: string
+              type: object
+      responses:
+        '200':
+          description: Connection
+          content:
+            application/json:
+              schema:
+                properties:
+                  status: { type: string }
+                  message: { type: string }
+                  user: { $ref: '#/components/schemas/User' }
+                  authorisation: { properties: { token: { type: string }, type: { type: string } }, type: object }
+                type: object
+  /me:
+    get:
+      tags:
+        - Auth
+      description: 'Get the authenticated user'
+      operationId: me
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              properties:
+                token:
+                  type: string
+              type: object
+      responses:
+        '200':
+          description: 'Get the authenticated user'
+          content:
+            application/json:
+              schema:
+                properties:
+                  status: { type: string }
+                  user: { $ref: '#/components/schemas/User' }
+                  client: { $ref: '#/components/schemas/Client' }
+                type: object
+  '/users/{id}':
+    get:
+      tags:
+        - Users
+      description: 'Get user profile'
+      operationId: profil
+      parameters:
+        -
+          name: id
+          in: path
+          description: 'User ID'
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              properties:
+                token:
+                  type: string
+              type: object
+      responses:
+        '200':
+          description: 'Get user profile'
+          content:
+            application/json:
+              schema:
+                properties:
+                  status: { type: boolean }
+                  message: { properties: { id: { type: integer }, nom: { type: string }, prenom: { type: string }, adresse: { type: string }, code_postal: { type: string }, ville: { type: string }, name: { type: string }, email: { type: string }, role: { type: string }, password: { type: string } }, type: object }
+                type: object
+    put:
+      tags:
+        - Users
+      description: 'Update a user'
+      operationId: update-user
+      parameters:
+        -
+          name: id
+          in: path
+          description: 'User ID'
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        description: 'User data'
+        required: true
+        content:
+          application/json:
+            schema:
+              properties:
+                name:
+                  type: string
+                email:
+                  type: string
+                password:
+                  type: string
+                role:
+                  type: string
+              type: object
+      responses:
+        '200':
+          description: 'Update a user'
+          content:
+            application/json:
+              schema:
+                properties:
+                  status: { type: boolean }
+                  message: { type: string }
+                  user: { $ref: '#/components/schemas/User' }
+                type: object
+      security:
+        -
+          bearerAuth:
+            role: gestionnaire
+    delete:
+      tags:
+        - Users
+      description: 'Delete a user'
+      operationId: destroy-user
+      parameters:
+        -
+          name: id
+          in: path
+          description: 'User ID'
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: 'Delete a user'
+          content:
+            application/json:
+              schema:
+                properties:
+                  status: { type: boolean }
+                  message: { type: string }
+                type: object
+      security:
+        -
+          bearerAuth:
+            role: admin
+components:
+  schemas:
+    Client:
+      title: Client
+      description: 'Represents a client'
+      properties:
+        id:
+          description: "Client's identifier"
+          type: integer
+        nom:
+          description: "Client's name"
+          type: string
+        prenom:
+          description: "Client's first name"
+          type: string
+        avatar:
+          description: "Client's avatar"
+          type: string
+        adresse:
+          description: "Client's address"
+          type: string
+        code_postal:
+          description: "Client's postal code"
+          type: string
+        ville:
+          description: "Client's city"
+          type: string
+        user_id:
+          description: 'Identifier of the user associated with the client'
+          type: integer
+      type: object
+    Reservation:
+      title: Reservation
+      description: 'A reservation for an event.'
+      properties:
+        id:
+          type: integer
+          format: int64
+        date_res:
+          type: string
+          format: date
+        nb_billets:
+          type: integer
+        montant:
+          type: number
+          format: double
+        statut:
+          type: string
+        evenement_id:
+          type: integer
+        client_id:
+          type: integer
+      type: object
+    User:
+      title: Utilisateur
+      description: "Un utilisateur connu de l'application"
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+        email:
+          type: string
+        role:
+          type: string
+      type: object
+  securitySchemes:
+    bearerAuth:
+      type: http
+      bearerFormat: JWT
+      scheme: bearer
