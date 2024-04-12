@@ -1,0 +1,23 @@
+# Utilisation de l'image PHP officielle en tant que base
+FROM dh-iutl.univ-artois.fr/php:7.4-apache
+
+# Installation des dépendances nécessaires pour Laravel
+RUN apt-get update && apt-get install -y \
+    libzip-dev \
+    unzip \
+    && docker-php-ext-install zip
+
+# Configuration du répertoire de travail
+WORKDIR /var/www/html
+
+# Copie de tous les fichiers du projet Laravel dans le conteneur
+COPY . .
+
+# Configuration du document root Apache
+RUN sed -i 's!/var/www/html!/var/www/html/public!g' /etc/apache2/sites-available/000-default.conf
+
+# Exposer le port 80 pour le serveur web Apache
+EXPOSE 80
+
+# Commande par défaut pour démarrer Apache
+CMD ["apache2-foreground"]
