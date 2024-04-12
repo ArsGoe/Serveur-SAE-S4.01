@@ -15,10 +15,30 @@ use App\Models\Reservation;
 use Database\Seeders\BilletSeeder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 
 class ReservationController extends Controller
 {
+    #[OA\Get(
+        path: "/reservations",
+        operationId: "index-reservations",
+        description: "List of reservations of a client",
+        security: [["bearerAuth" => ["role" => "actif"]],],
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(properties: [
+                new OA\Property(property: 'token', type: 'string')
+            ]),
+        ),
+        tags: ["Reservations"],
+        responses: [
+            new OA\Response(response: 200,
+                description: "List of reservations",
+                content: new OA\JsonContent(properties: [
+                    new OA\Property(property: "reservation", ref: "#/components/schemas/Reservation", type: "object"),
+                ], type: "object")
+            )
+        ]
+    )]
     public function reservationsClient(Request $request)
     {
         $id_client = $request->user()->client->id;
@@ -30,7 +50,6 @@ class ReservationController extends Controller
                 $billet->prix_unitaire = $billet->prix->valeur;
             });
         });
-
         return ReservationResource::collection($reservations);
     }
 
@@ -49,6 +68,37 @@ class ReservationController extends Controller
         return ReservationResource::collection($reservation);
     }
 
+    #[OA\Get(
+        path: "/evenements/{id}/reservations",
+        operationId: "index-reservations-event",
+        description: "List of reservations of an event",
+        security: [["bearerAuth" => ["role" => "gestionnaire,admin"]],],
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(properties: [
+                new OA\Property(property: 'token', type: 'string'),
+                new OA\Property(property: 'date_debut', type: 'date'),
+                new OA\Property(property: 'date_fin', type: 'date'),
+                new OA\Property(property: 'id_client', type: 'integer')
+            ]),
+        ),
+        tags: ["Reservations"],
+        parameters: [
+            new OA\Parameter(
+                name: "evenement_id",
+                description: "Event ID",
+                in: "path", required: "true",
+                schema: new OA\Schema(type: "integer", format: 'int64'))
+        ],
+        responses: [
+            new OA\Response(response: 200,
+                description: "List of reservations",
+                content: new OA\JsonContent(properties: [
+                    new OA\Property(property: "reservation", ref: "#/components/schemas/Reservation", type: "object"),
+                ], type: "object")
+            )
+        ]
+    )]
     public function reservationsEvent(Request $request, $evenement_id)
     {
         $dateDebut = $request->query('date_debut');
@@ -268,8 +318,6 @@ class ReservationController extends Controller
 
         $reservation->statut = Statut::PAYE;
         $reservation->save();
-
-
 
         return response()->json(['message' => 'Reservation paid']);
     }
