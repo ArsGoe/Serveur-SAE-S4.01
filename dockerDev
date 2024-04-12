@@ -1,0 +1,17 @@
+# Utilisation de l'image PHP officielle en tant que base
+FROM dh-iutl.univ-artois.fr/php:7.4-cli
+
+# Installation des dépendances nécessaires pour Laravel
+RUN apt-get update && apt-get install -y \
+    libzip-dev \
+    unzip \
+    && docker-php-ext-install zip
+
+# Configuration du répertoire de travail
+WORKDIR /app
+
+# Exposer le port 8000 pour le serveur Laravel
+EXPOSE 8000
+
+# Commande par défaut pour lancer le serveur PHP artisan
+CMD ["php", "artisan", "serve", "--host", "0.0.0.0"]
