@@ -15,7 +15,6 @@ use App\Models\Reservation;
 use Database\Seeders\BilletSeeder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use OpenApi\Attributes as OA;
 
 class ReservationController extends Controller
 {
@@ -52,6 +51,21 @@ class ReservationController extends Controller
             });
         });
         return ReservationResource::collection($reservations);
+    }
+
+    public function reservation(Request $request)
+    {
+        $id_reservation = $request->id;
+        $reservation = Reservation::where('id', $id_reservation)->get();
+
+        $reservation->map(function ($reservation) {
+            $reservation->load('billets.prix');
+            $reservation->billets->map(function ($billet) {
+                $billet->prix_unitaire = $billet->prix->valeur;
+            });
+        });
+
+        return ReservationResource::collection($reservation);
     }
 
     #[OA\Get(
