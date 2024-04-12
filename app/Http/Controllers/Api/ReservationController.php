@@ -15,10 +15,31 @@ use App\Models\Reservation;
 use Database\Seeders\BilletSeeder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use OpenApi\Attributes as OA;
 
 class ReservationController extends Controller
 {
+    #[OA\Get(
+        path: "/reservations",
+        operationId: "index-reservations",
+        description: "List of reservations of a client",
+        security: [["bearerAuth" => ["role" => "actif"]],],
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(properties: [
+                new OA\Property(property: 'token', type: 'string')
+            ]),
+        ),
+        tags: ["Reservations"],
+        responses: [
+            new OA\Response(response: 200,
+                description: "List of reservations",
+                content: new OA\JsonContent(properties: [
+                    new OA\Property(property: "reservation", ref: "#/components/schemas/Reservation", type: "object"),
+                ], type: "object")
+            )
+        ]
+    )]
     public function reservationsClient(Request $request)
     {
         $id_client = $request->user()->client->id;
@@ -30,7 +51,6 @@ class ReservationController extends Controller
                 $billet->prix_unitaire = $billet->prix->valeur;
             });
         });
-
         return ReservationResource::collection($reservations);
     }
 
